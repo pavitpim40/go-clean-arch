@@ -15,8 +15,11 @@ import (
 	mysqlRepo "github.com/bxcodec/go-clean-arch/internal/repository/mysql"
 
 	"github.com/bxcodec/go-clean-arch/article"
+	"github.com/bxcodec/go-clean-arch/pdf"
+
 	"github.com/bxcodec/go-clean-arch/internal/rest"
 	"github.com/bxcodec/go-clean-arch/internal/rest/middleware"
+
 	"github.com/joho/godotenv"
 )
 
@@ -75,10 +78,13 @@ func main() {
 	// Prepare Repository
 	authorRepo := mysqlRepo.NewAuthorRepository(dbConn)
 	articleRepo := mysqlRepo.NewArticleRepository(dbConn)
+	pdfRepo := mysqlRepo.NewPDFRepository(dbConn)
 
 	// Build service Layer
 	svc := article.NewService(articleRepo, authorRepo)
+	pdfSvc := pdf.NewService(pdfRepo)
 	rest.NewArticleHandler(e, svc)
+	rest.NewPDFHandler(e, pdfSvc)
 
 	// Start Server
 	address := os.Getenv("SERVER_ADDRESS")
